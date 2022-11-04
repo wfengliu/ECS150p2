@@ -12,16 +12,17 @@
 #include "context.c"
 #include "queue.c"
 
-Tcb idle;
-Tcb current;
+
 Queue *ready_q;
 
 typedef struct uthread_tcb {
 	int state;
 	void *stack;
 	uthread_ctx_t *uctx;
-
 } Tcb;
+
+Tcb *idle;
+Tcb *current;
 
 struct uthread_tcb *uthread_current(void)
 {
@@ -35,7 +36,6 @@ void uthread_yield(void)
 
 void uthread_exit(void)
 {
-	queue_dequeue(ready_q, current);
 	uthread_ctx_destroy_stack(current->stack);
 }
 
@@ -53,11 +53,12 @@ int uthread_create(uthread_func_t func, void *arg)
 
 int uthread_run(bool preempt, uthread_func_t func, void *arg)
 {
-	int *ptr;
-
 	if(uthread_create(func, arg) == -1)
-		return 1;
+		return -1;
 	
+	if(preempt)
+		return 2;
+
 	idle = malloc(sizeof(Tcb));
 
 	Tcb *initial = malloc(sizeof(Tcb));
@@ -66,7 +67,7 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 
 	while(ready_q->count!=0)
 	{
-		uthead_exit();
+		uthread_exit();
 		ready_q->count--;
 	}
 	return 0;
@@ -74,4 +75,4 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 
 void uthread_block(void) {}
 
-void uthread_unblock(struct uthread_tcb *uthread) {}
+//void uthread_unblock(struct uthread_tcb *uthread) {}

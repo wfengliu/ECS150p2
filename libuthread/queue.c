@@ -141,3 +141,10 @@ int queue_iterate(queue_t queue, queue_func_t func)
 
 	return 0;
 }
+
+int queue_length(queue_t queue)
+{
+	if(queue == NULL)
+		return -1;
+	return queue->count;
+}
