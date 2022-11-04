@@ -52,4 +52,4 @@ though it is not fully flushed out enough run successfully
 
 Link to our github repository: [github][1].
 
-[1]: https://github.com/wfengliu/ECS-150-project-2
+[1]: https://github.com/wfengliu/ECS150p2
